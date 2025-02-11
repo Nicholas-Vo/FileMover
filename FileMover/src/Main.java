@@ -1,3 +1,4 @@
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.*;
@@ -8,6 +9,7 @@ public class Main {
     static Path currentPath;
     static Path newPath;
     static PrintWriter file;
+
     public static void main(String[] args) throws IOException {
 
             currentPath = Paths.get("Movable.txt");
@@ -22,10 +24,11 @@ public class Main {
     static void getDirectory(){
         try {
             file = new PrintWriter("Movable.txt");
-            file.append("This file will be moved once it is moved to its new directory");
+            file.append("This file will be updated once it is moved to its new directory!");
            /*Once the file is moved it will display a different message
-           "This file was moved to a new directory "
+           "This file was moved to a new directory!"
             */
+            clearFile();
             file.close();
             System.out.println("File updated.");
         } catch (IOException exception) {
@@ -35,6 +38,22 @@ public class Main {
         }
     }
     static void moveFile() throws IOException {
-        Files.move(currentPath,newPath);
+        if (!Files.exists(newPath)) {
+            Files.move(currentPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            System.out.println("File already exists at destination.");
+        }
+    }
+
+    static void clearFile() throws IOException {
+
+        // Clear the file and write new content
+        try (FileOutputStream fos = new FileOutputStream(String.valueOf(newPath), false)) {
+            String newContent = "This file was moved to a new directory!";
+            fos.write(newContent.getBytes());
+            System.out.println("File cleared and new content written successfully.");
+        } catch (IOException e) {
+            System.err.println("An error occurred while writing to the file: " + e.getMessage());
+        }
     }
 }
