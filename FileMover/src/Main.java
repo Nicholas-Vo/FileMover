@@ -1,4 +1,5 @@
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.*;
@@ -9,46 +10,61 @@ public class Main {
     static Path currentPath;
     static Path newPath;
     static PrintWriter file;
+    static FileWriter history;
+    static Path targetPath;
 
     public static void main(String[] args) throws IOException {
 
-            currentPath = Paths.get("Movable.txt");
-            System.out.println("Current dir: " + "\n" + currentPath.toAbsolutePath());
-            System.out.println("New Path: ");
-            newPath = Paths.get(sc.nextLine());
+        currentPath = Path.of("Movable.txt").toAbsolutePath();
+        System.out.println("Current dir: " + "\n" + currentPath);
+        System.out.println("New Path: ");
+        newPath = Paths.get(sc.nextLine());
 
-            getDirectory();
-            moveFile();
-
+        getDirectory();
+        moveFile(); // Now correctly moves and updates the file
     }
-    static void getDirectory(){
+
+    static void getDirectory() {
         try {
             file = new PrintWriter("Movable.txt");
             file.append("This file will be updated once it is moved to its new directory!");
-           /*Once the file is moved it will display a different message
-           "This file was moved to a new directory!"
+            /* Once the file is moved it will display a different message:
+               "This file was moved to a new directory!"
             */
-            clearFile();
             file.close();
             System.out.println("File updated.");
         } catch (IOException exception) {
             System.out.println("Error!");
             exception.printStackTrace();
-
         }
     }
+
     static void moveFile() throws IOException {
-        if (!Files.exists(newPath)) {
-            Files.move(currentPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+        // Ensure the new path includes the file name, not just the directory
+        targetPath = newPath.resolve(currentPath.getFileName());
+
+        if (!Files.exists(targetPath)) {
+            Files.move(currentPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            try {
+                history = new FileWriter("History.txt");
+                history.append(String.valueOf(newPath));
+                history.close();
+                System.out.println("File updated.");
+            } catch (IOException exception) {
+                System.out.println("Error!");
+                exception.printStackTrace();
+            }
+            System.out.println("File moved successfully!");
+            // Update file contents after moving
+            clearFile(targetPath);
         } else {
-            System.out.println("File already exists at destination.");
+            System.out.println("This file already exists in this directory!");
         }
     }
 
-    static void clearFile() throws IOException {
-
-        // Clear the file and write new content
-        try (FileOutputStream fos = new FileOutputStream(String.valueOf(newPath), false)) {
+    static void clearFile(Path targetFile) {
+        // Clear the file and write new content to reflect the move
+        try (FileOutputStream fos = new FileOutputStream(targetFile.toString(), false)) {
             String newContent = "This file was moved to a new directory!";
             fos.write(newContent.getBytes());
             System.out.println("File cleared and new content written successfully.");
