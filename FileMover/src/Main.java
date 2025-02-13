@@ -17,7 +17,6 @@ public class Main {
         System.out.println("Current dir: " + "\n" + currentPath);
         System.out.println("New Path: ");
         newPath = Paths.get(sc.nextLine());
-
         getDirectory();
         moveFile(); // Now correctly moves and updates the file
 
@@ -32,7 +31,6 @@ public class Main {
                "This file was moved to a new directory!"
             */
             file.close();
-            System.out.println("File updated.");
         } catch (IOException exception) {
             System.out.println("Error!");
         }
@@ -46,7 +44,6 @@ public class Main {
             System.out.println("File moved successfully!");
             Files.move(currentPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
             historyFile();
-            System.out.println(sc.nextLine());
             // Update file contents after moving
         } else {
             System.out.println("This file already exists in this directory!");
@@ -70,13 +67,10 @@ public class Main {
             history = new FileWriter("History.txt");
             history.append(String.valueOf(newPath));
             history.close();
-                System.out.println("File updated.");
-                System.out.println("No updates to the file were made!");
-
+            System.out.println("History updated.");
             System.out.println(fsc.nextLine());
         } catch (IOException exception) {
             System.out.println("Error!");
             exception.printStackTrace();
         }
     }
-}
