@@ -1,7 +1,4 @@
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.*;
 import java.util.Scanner;
 
@@ -12,6 +9,7 @@ public class Main {
     static PrintWriter file;
     static FileWriter history;
     static Path targetPath;
+    static Scanner fsc = new Scanner(String.valueOf(history));
 
     public static void main(String[] args) throws IOException {
 
@@ -22,11 +20,13 @@ public class Main {
 
         getDirectory();
         moveFile(); // Now correctly moves and updates the file
+
     }
 
     static void getDirectory() {
         try {
             file = new PrintWriter("Movable.txt");
+            /*
             file.append("This file will be updated once it is moved to its new directory!");
             /* Once the file is moved it will display a different message:
                "This file was moved to a new directory!"
@@ -35,7 +35,6 @@ public class Main {
             System.out.println("File updated.");
         } catch (IOException exception) {
             System.out.println("Error!");
-            exception.printStackTrace();
         }
     }
 
@@ -44,24 +43,16 @@ public class Main {
         targetPath = newPath.resolve(currentPath.getFileName());
 
         if (!Files.exists(targetPath)) {
-            Files.move(currentPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-            try {
-                history = new FileWriter("History.txt");
-                history.append(String.valueOf(newPath));
-                history.close();
-                System.out.println("File updated.");
-            } catch (IOException exception) {
-                System.out.println("Error!");
-                exception.printStackTrace();
-            }
             System.out.println("File moved successfully!");
+            Files.move(currentPath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+            historyFile();
+            System.out.println(sc.nextLine());
             // Update file contents after moving
-            clearFile(targetPath);
         } else {
             System.out.println("This file already exists in this directory!");
         }
     }
-
+    /*
     static void clearFile(Path targetFile) {
         // Clear the file and write new content to reflect the move
         try (FileOutputStream fos = new FileOutputStream(targetFile.toString(), false)) {
@@ -70,6 +61,22 @@ public class Main {
             System.out.println("File cleared and new content written successfully.");
         } catch (IOException e) {
             System.err.println("An error occurred while writing to the file: " + e.getMessage());
+        }
+    }
+
+     */
+    static void historyFile(){
+        try {
+            history = new FileWriter("History.txt");
+            history.append(String.valueOf(newPath));
+            history.close();
+                System.out.println("File updated.");
+                System.out.println("No updates to the file were made!");
+
+            System.out.println(fsc.nextLine());
+        } catch (IOException exception) {
+            System.out.println("Error!");
+            exception.printStackTrace();
         }
     }
 }
